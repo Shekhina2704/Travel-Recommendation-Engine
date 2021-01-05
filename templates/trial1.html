@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Home</title>
+  <meta charset="utf-8">
+  <meta name="weekend_getaway" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+
+  <style>
+  #Header {
+      color: red;
+      font-family: Arial;
+      font-size: 60px;
+      text-align: center;
+      }
+
+  #tagline {
+      font-size: 25px;
+      text-align: center;
+       }
+
+  #img {
+      background: url(img2.jpg);
+      background-repeat: no-repeat;
+      background-size: 1800px;
+      -webkit-filter: blur(2px);
+  }
+  
+  #image1{
+      max-width: 100%;
+      height: auto;
+      background-size: 100%;
+      /* -webkit-filter: blur(2px); */
+  }
+
+
+  .container.cont1 {width: 1500px}
+
+  .btn {
+      padding: 20px;
+  }
+
+  .text-block {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      background-color: black;
+      color: white;
+      padding-left:20px;
+      padding-right: 20px;
+  }
+
+
+   </style>
+</head>
+<body>
+
+<div class="home">
+
+<div class="container main">
+    <div style="background-image: url('img2.jpg'); background-repeat: no-repeat; background-size:2000px;">
+        <h1 id="Header">WEEKEND GETAWAY</h1>      
+        <p id="tagline">Dream. Explore. Discover</p>
+    </div>    
+</div>
+
+  <div class="container cont1" id="button">
+
+    <div class="btn-group btn-group-justified">
+    <a href="home.html" class="btn btn-primary">Home</a>
+    <a href="about.html" class="btn btn-danger">About</a>
+    <a href="BMI.html" class="btn btn-success">Things to do</a>
+    <a href="calorie.html" class="btn btn-info">Hotels</a>
+    <a href="predict.html" class="btn btn-warning">Restaurants</a>
+  </div>
+
+</div>
+
+
+
+</div>
+
+<div class="row">
+    <div class="column">
+        <img id="image1" src="img2.jpg" style="width:fit-content">
+        <img id="image3" src="img2.jpg" style="width:fit-content">
+    </div>
+    
+</div>
+
+<p></p>
+
+<script>
+
+var imageSources = ["im1.jpg", "food.jpg"]
+
+var index = 0;
+setInterval (function(){
+  if (index === imageSources.length) {
+    index = 0;
+  }
+  document.getElementById("image1").src = imageSources[index];
+//   document.getElementById("image2").src = imageSources[index];
+  document.getElementById("image3").src = imageSources[index];
+//   document.getElementById("image4").src = imageSources[index];
+
+  index++;
+} , 2000);
+
+</script>
+
+
+
+</body>
+</html>
+
+
+

@@ -1,0 +1,134 @@
+@app.route("/home")
+def home():
+    for i in df["Place"]:
+        df["Images"] = df["Place"] + ".jpg"
+    train = df[
+        [
+            "User_Id",
+            "Age",
+            "Gender_code",
+            "User_Locale",
+            "Preferred_cuisines",
+            "Place",
+            "State",
+            "Theme",
+            "Number_of_travellers",
+            "Images",
+            "Description",
+        ]
+    ]
+    features = pd.concat(
+        [
+            pd.get_dummies(train[["Theme"]]),
+            pd.get_dummies(train[["Gender_code"]]),
+            pd.get_dummies(train[["User_Locale"]]),
+            pd.get_dummies(train[["Preferred_cuisines"]]),
+            pd.get_dummies(train[["Place"]]),
+            pd.get_dummies(train[["State"]]),
+        ],
+        axis=1,
+    )
+    from sklearn.preprocessing import MinMaxScaler
+
+    min_max_scaler = MinMaxScaler()
+    features = min_max_scaler.fit_transform(features)
+    np.round(features, 2)
+    from sklearn.neighbors import NearestNeighbors
+
+    model = NearestNeighbors(n_neighbors=20, metric="cosine")
+    with open("model_pickle", "wb") as f:
+        pickle.dump(model, f)
+    nbrs = model.fit(features)
+
+    distances, indices = nbrs.kneighbors(features)
+
+    def get_index_from_id(theme):
+        return train[train["User_Id"] == theme].index.tolist()[0]
+
+    all_state_names = list(train.State.values)
+
+    def print_similar_places(query=None):
+        found_id = get_index_from_id(query)
+        l = []
+        for id in indices[found_id][1:]:
+            q = []
+            q.append(train.iloc[id]["Age"])
+            q.append(train.iloc[id]["Place"])
+            q.append(train.iloc[id]["State"])
+            q.append(train.iloc[id]["Preferred_cuisines"])
+            q.append(train.iloc[id]["Images"])
+            q.append(train.iloc[id]["Description"])
+            l.append(q)
+        return l
+        l.sort(key=lambda x: x[3], reverse=True)
+
+    rec = pd.DataFrame(print_similar_places(1002)).drop_duplicates(subset=[1, 2])
+    rec = rec.drop(0)
+    img = rec[4].tolist()
+
+    des = rec[5].tolist()
+    return render_template("home.html", rec=rec, img=img, des=des)
+
+
+@app.route("/age")
+def age():
+    age_freq = (
+        df.drop_duplicates(subset="User_Id")
+        .groupby("Age")["Age"]
+        .count()
+        .reset_index(name="freq")
+    )
+    age = list(age_freq["Age"])
+    freq = list(age_freq["freq"])
+    return render_template("age.html", age=age, freq=freq)
+
+
+@app.route("/gender")
+def gender():
+    gender_freq = (
+        df.drop_duplicates(subset="User_Id")
+        .groupby("Gender_code")["Gender_code"]
+        .count()
+        .reset_index(name="freq")
+    )
+    gender = list(gender_freq["Gender_code"])
+    freq = list(gender_freq["freq"])
+    return render_template("gender.html", gender=gender, freq=freq)
+
+
+@app.route("/month")
+def month():
+    df["Year"] = pd.DatetimeIndex(df["Date"]).year
+    df["Month"] = pd.DatetimeIndex(df["Date"]).month
+    month_freq = df.groupby(["Month"])["Month"].count().reset_index(name="freq")
+    month = list(month_freq["Month"])
+    freq = list(month_freq["freq"])
+    return render_template("month.html", month=month, freq=freq)
+
+
+@app.route("/ad")
+def ad():
+    ad_freq = (
+        df.drop_duplicates(subset="User_Id")
+        .groupby("Ad_source")["Ad_source"]
+        .count()
+        .reset_index(name="freq")
+    )
+    ad = list(ad_freq["Ad_source"])
+    freq = list(ad_freq["freq"])
+    return render_template("ad.html", ad=ad, freq=freq)
+
+
+@app.route("/about")
+def about():
+    return render_template("about.html")
+
+
+@app.route("/admin")
+def admin():
+    return render_template("admin.html")
+
+
+@app.route("/feedback")
+def feedback():
+    return render_template("feedback.html")
